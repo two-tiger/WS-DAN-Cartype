@@ -109,7 +109,6 @@ class WSDAN(nn.Module):
 
         # Classification
         p = self.fc(feature_matrix * 100.)
-        print(p)
 
         # Generate Attention Map
         if self.training:

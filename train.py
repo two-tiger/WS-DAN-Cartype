@@ -14,6 +14,7 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from PIL import Image
 import torchvision
+import numpy as np
 
 import config
 from models import WSDAN
@@ -37,7 +38,8 @@ crop_metric = TopKAccuracyMetric(topk=(1, 5))
 drop_metric = TopKAccuracyMetric(topk=(1, 5))
 
 # path
-augument_path = './AugumentData'
+crop_path = './AugumentData/crop/'
+drop_path = './AugumentData/drop/'
 
 def main():
     ##################################
@@ -148,7 +150,8 @@ def main():
               net=net,
               feature_center=feature_center,
               optimizer=optimizer,
-              pbar=pbar)
+              pbar=pbar,
+              epoch=(epoch + 1))
         validate(logs=logs,
                  data_loader=validate_loader,
                  net=net,
@@ -171,12 +174,19 @@ def train(**kwargs):
     feature_center = kwargs['feature_center']
     optimizer = kwargs['optimizer']
     pbar = kwargs['pbar']
+    epoch = kwargs['epoch']
 
     # metrics initialization
     loss_container.reset()
     raw_metric.reset()
     crop_metric.reset()
     drop_metric.reset()
+
+    # make dir
+    crop_path_epoch = crop_path + 'epoch' + str(epoch)
+    drop_path_epoch = drop_path + 'epoch' + str(epoch)
+    os.mkdir(crop_path_epoch)
+    os.mkdir(drop_path_epoch)
 
     # begin training
     start_time = time.time()
@@ -203,7 +213,8 @@ def train(**kwargs):
         ##################################
         with torch.no_grad():
             crop_images = batch_augment(X, attention_map[:, :1, :, :], mode='crop', theta=(0.4, 0.6), padding_ratio=0.1)
-            torchvision.utils.save_image(crop_images, augument_path)
+            for j in range(len(crop_images)):
+                torchvision.utils.save_image(crop_images[j], fp=crop_path_epoch + '/'+ str(i * config.batch_size + j)+'.jpg')
 
         # crop images forward
         y_pred_crop, _, _ = net(crop_images)
@@ -213,6 +224,8 @@ def train(**kwargs):
         ##################################
         with torch.no_grad():
             drop_images = batch_augment(X, attention_map[:, 1:, :, :], mode='drop', theta=(0.2, 0.5))
+            for k in range(len(drop_images)):
+                torchvision.utils.save_image(drop_images[j], fp=drop_path_epoch + '/'+ str(i * config.batch_size + k)+'.jpg')
 
         # drop images forward
         y_pred_drop, _, _ = net(drop_images)
