@@ -132,8 +132,8 @@ def main():
             for j in range(len(X)):
                 predict_la = concat_predict.data[j]
                 true_la = label.data[j]
-                predict_la_name = label_dict[predict_la.item()]
-                true_la_name = label_dict[true_la.item()]
+                predict_la_name = label_dict[str(predict_la.item())]
+                true_la_name = label_dict[str(true_la.item())]
                 picture_name = image_res_list[i][j]
                 pre_result.append(picture_name + ' predict_la: ' + predict_la_name + 
                                     ' true_la: ' + true_la_name)
