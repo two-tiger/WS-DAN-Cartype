@@ -46,13 +46,7 @@ with open('image_class_labels.txt', 'w') as f:
         f.write(str(i+1) + ' ' + class_dic[className] + '\n')
 
 # train_test_split.txt
-choice_test = random.sample(picture_path_list, int(len(picture_path_list) * 0.3))
-choice_index = []
-for choice in choice_test:
-    choice_index.append(picture_path_list.index(choice))
-seq = [1] * len(picture_path_list)
-for i in choice_index:
-    seq[i] = 0
+seq = [0] * len(picture_path_list)
 with open('train_test_split.txt', 'w') as f:
     for i, train_test_index in enumerate(seq):
         f.write(str(i+1)+ ' ' + str(train_test_index) + '\n')
