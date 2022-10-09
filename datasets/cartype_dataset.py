@@ -10,7 +10,6 @@ from torch.utils.data import Dataset
 from utils import get_transform
 
 
-DATAPATH = './CarType'
 image_path = {}
 image_label = {}
 
@@ -22,21 +21,25 @@ class CarTypeDataset(Dataset):
         self.resize = resize
         self.image_id = []
         self.num_classes = 9
+        if self.phase in ['train', 'val']:
+            self.data_path = './CarType_train'
+        else:
+            self.data_path = './CarType_test'
 
         # get image path from images.txt
-        with open(os.path.join(DATAPATH, 'images.txt')) as f:
+        with open(os.path.join(self.data_path, 'images.txt')) as f:
             for line in f.readlines():
                 id, path = line.strip().split(' ')
                 image_path[id] = path
 
         # get image label from image_class_labels.txt
-        with open(os.path.join(DATAPATH, 'image_class_labels.txt')) as f:
+        with open(os.path.join(self.data_path, 'image_class_labels.txt')) as f:
             for line in f.readlines():
                 id, label = line.strip().split(' ')
                 image_label[id] = int(label)
 
         # get train/test image id from train_test_split.txt
-        with open(os.path.join(DATAPATH, 'train_test_split.txt')) as f:
+        with open(os.path.join(self.data_path, 'train_test_split.txt')) as f:
             for line in f.readlines():
                 image_id, is_training_image = line.strip().split(' ')
                 is_training_image = int(is_training_image)
@@ -54,7 +57,7 @@ class CarTypeDataset(Dataset):
         image_id = self.image_id[item]
 
         # image
-        image = Image.open(os.path.join(DATAPATH, 'images', image_path[image_id])).convert('RGB') # (C, H, W)
+        image = Image.open(os.path.join(self.data_path, 'images', image_path[image_id])).convert('RGB') # (C, H, W)
         image = self.transform(image) # 改变大小
 
         # return image and label

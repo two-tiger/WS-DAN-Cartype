@@ -20,3 +20,17 @@ def get_trainval_datasets(tag, resize):
         return CarTypeDataset(phase='train', resize=resize), CarTypeDataset(phase='val', resize=resize)
     else:
         raise ValueError('Unsupported Tag {}'.format(tag))
+    
+def get_test_datasets(tag, resize):
+    if tag == 'aircraft':
+        return AircraftDataset(phase='test', resize=resize)
+    elif tag == 'bird':
+        return BirdDataset(phase='test', resize=resize)
+    elif tag == 'car':
+        return CarDataset(phase='test', resize=resize)
+    elif tag == 'dog':
+        return DogDataset(phase='test', resize=resize)
+    elif tag == 'cartype':
+        return CarTypeDataset(phase='test', resize=resize)
+    else:
+        raise ValueError('Unsupported Tag {}'.format(tag))

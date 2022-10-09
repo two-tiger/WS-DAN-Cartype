@@ -12,7 +12,7 @@ import shutil
 
 import config
 from models import WSDAN
-from datasets import get_trainval_datasets
+from datasets import get_test_datasets
 from utils import TopKAccuracyMetric, batch_augment
 
 # GPU settings
@@ -29,16 +29,16 @@ if visualize:
 
 # label dict
 label_dict = {}
-with open('./CarType/class.txt', 'r') as f:
+with open('./CarType_test/class.txt', 'r') as f:
     for line in f.readlines():
         id, label_name = line.strip().split(' ')
         label_dict[id] = label_name
 
 # path
-root_path = './CarType'
+root_path = './CarType_test'
 image_path = root_path + '/images'
-true_path = './CarType/true_result'
-wrong_path = './CarType/wrong_result'
+true_path = './CarType_test/true_result'
+wrong_path = './CarType_test/wrong_result'
 if not os.path.exists(true_path):
     os.mkdir(true_path)
 if not os.path.exists(wrong_path):
@@ -78,7 +78,7 @@ def main():
         return
 
     # Dataset for testing
-    _, test_dataset = get_trainval_datasets(config.tag, resize=config.image_size)
+    test_dataset = get_test_datasets(config.tag, resize=config.image_size)
     all_image_list = test_dataset.get_all_image_path()
     image_res_list = split_list_with_batchsize(all_image_list, config.batch_size)
     test_loader = DataLoader(test_dataset, batch_size=config.batch_size, shuffle=False,

@@ -12,7 +12,7 @@ import shutil
 
 import config
 from models import WSDAN
-from datasets import get_trainval_datasets
+from datasets import get_test_datasets
 from utils import TopKAccuracyMetric, batch_augment
 
 # GPU settings
@@ -60,7 +60,7 @@ def main():
         return
 
     # Dataset for testing
-    _, test_dataset = get_trainval_datasets(config.tag, resize=config.image_size)
+    test_dataset = get_test_datasets(config.tag, resize=config.image_size)
     all_image_list = test_dataset.get_all_image_path()
     image_res_list = split_list_with_batchsize(all_image_list, config.batch_size)
     test_loader = DataLoader(test_dataset, batch_size=config.batch_size, shuffle=False,

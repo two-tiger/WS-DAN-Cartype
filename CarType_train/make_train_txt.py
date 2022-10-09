@@ -11,6 +11,7 @@ import os
 import random
 
 images_path = './images/'
+class_names = ['car', 'lbus', 'ltruck', 'mbus', 'mpv', 'mtruck', 'nonmotor', 'suv', 'van']
 
 # rename the picture
 class_files = os.listdir(images_path)
@@ -35,7 +36,7 @@ with open('images.txt','w',encoding='utf-8') as f:
 # class.txt
 class_dic = {}
 with open('class.txt', 'w') as f:
-    for i, class_name in enumerate(class_files):
+    for i, class_name in enumerate(class_names):
         f.write(str(i) + ' ' + class_name + '\n')
         class_dic[class_name] = str(i)
 
@@ -46,7 +47,7 @@ with open('image_class_labels.txt', 'w') as f:
         f.write(str(i+1) + ' ' + class_dic[className] + '\n')
 
 # train_test_split.txt
-choice_test = random.sample(picture_path_list, int(len(picture_path_list) * 0.3))
+choice_test = random.sample(picture_path_list, int(len(picture_path_list) * 0.2))
 choice_index = []
 for choice in choice_test:
     choice_index.append(picture_path_list.index(choice))
