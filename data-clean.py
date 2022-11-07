@@ -1,7 +1,5 @@
 import os
 import logging
-from tkinter import Image
-import warnings
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -21,12 +19,6 @@ os.environ['CUDA_VISIBLE_DEVICES'] = config.GPU
 device = torch.device("cuda")
 torch.backends.cudnn.benchmark = True
 
-# visualize
-visualize = config.visualize
-savepath = config.eval_savepath
-if visualize:
-    os.makedirs(savepath, exist_ok=True)
-
 # label dict
 label_dict = {}
 with open('./CarType_test/class.txt', 'r') as f:
@@ -38,10 +30,6 @@ with open('./CarType_test/class.txt', 'r') as f:
 root_path = './CarType_test'
 image_path = root_path + '/images'
 result_path = './split-result'
-
-ToPILImage = transforms.ToPILImage()
-MEAN = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1)
-STD = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1)
 
 
 def split_list_with_batchsize(image_list, batchsize):
@@ -70,7 +58,7 @@ def main():
     checkpoint = torch.load(ckpt)
     state_dict = checkpoint['state_dict']
     net.load_state_dict(state_dict)
-    logging.info('Network loaded from {}'.format(ckpt))
+    print('model have been loaded!')
 
     # use cuda
     net.to(device)
@@ -101,36 +89,13 @@ def main():
 
             for j in range(len(X)):
                 predict_la = concat_predict.data[j]
-                true_la = label.data[j]
                 predict_la_name = label_dict[str(predict_la.item())]
-                #true_la_name = label_dict[str(true_la.item())]
                 picture_name = image_res_list[i][j]
                 im_path = os.path.join(image_path, picture_name)
                 shutil.copy(im_path, os.path.join(result_path, predict_la_name))
                 total += 1
 
-
-            if visualize:
-                # reshape attention maps
-                attention_maps = F.upsample_bilinear(attention_maps, size=(X.size(2), X.size(3)))
-                attention_maps = torch.sqrt(attention_maps.cpu() / attention_maps.max().item())
-
-                # get heat attention maps
-                heat_attention_maps = generate_heatmap(attention_maps)
-
-                # raw_image, heat_attention, raw_attention
-                raw_image = X.cpu() * STD + MEAN
-                heat_attention_image = raw_image * 0.5 + heat_attention_maps * 0.5
-                raw_attention_image = raw_image * attention_maps
-
-                for batch_idx in range(X.size(0)):
-                    rimg = ToPILImage(raw_image[batch_idx])
-                    raimg = ToPILImage(raw_attention_image[batch_idx])
-                    haimg = ToPILImage(heat_attention_image[batch_idx])
-                    rimg.save(os.path.join(savepath, '%03d_raw.jpg' % (i * config.batch_size + batch_idx)))
-                    raimg.save(os.path.join(savepath, '%03d_raw_atten.jpg' % (i * config.batch_size + batch_idx)))
-                    haimg.save(os.path.join(savepath, '%03d_heat_atten.jpg' % (i * config.batch_size + batch_idx)))
-
+    print('the total number of picture is : ' + str(total))
     print('finishing spliting!')
 
 
