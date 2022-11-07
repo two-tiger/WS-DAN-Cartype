@@ -35,3 +35,8 @@ ckpt = False
 visualize = False
 eval_ckpt = save_dir + model_name
 eval_savepath = './FGVC/CarType/visualize/'
+
+##################################################
+# split file
+##################################################
+split_threshold = 0.6

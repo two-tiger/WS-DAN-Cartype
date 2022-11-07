@@ -93,14 +93,14 @@ def main():
 
             y_pred_crop, _, _ = net(crop_image)
             y_pred = (y_pred_raw + y_pred_crop) / 2.
-            F.normalize(y_pred.float(), p=1, dim=1)
+            normalize_y_pred = F.normalize(y_pred.float(), p=2, dim=1)
             
 
-            _, concat_predict = torch.max(y_pred,dim=1)
+            _, concat_predict = torch.max(normalize_y_pred, dim=1)
 
             for j in range(len(X)):
                 predict_la = concat_predict.data[j]
-                if y_pred.data[j][predict_la] > 0.8:
+                if normalize_y_pred.data[j][predict_la] > config.split_threshold:
                     predict_la_name = label_dict[str(predict_la.item())]
                     classified_number += 1
                 else:

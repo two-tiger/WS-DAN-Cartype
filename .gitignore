@@ -1,10 +1,8 @@
 *.iml
 *.xml
 *.txt
-*.log
 *.DS_Store
 /.vscode
 /CarType/images/
 /AugumentData
 *.tar.gz
-/FGVC
