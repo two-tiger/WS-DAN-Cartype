@@ -30,7 +30,14 @@ with open('./CarType_test/class.txt', 'r') as f:
 root_path = './CarType_test'
 image_path = root_path + '/images'
 result_path = './split-result'
-
+if not os.path.exists(result_path):
+    os.makedirs(result_path)
+for labelName in label_dict.values():
+    result_label_path = os.path.join(result_path, labelName)
+    if not os.path.exists(result_label_path):
+        os.makedirs(result_label_path)
+if not os.path.exists(os.path.join(result_path, 'uncertain')):
+    os.makedirs(os.path.join(result_path, 'uncertain'))
 
 def split_list_with_batchsize(image_list, batchsize):
     reshape_list = []
@@ -67,6 +74,8 @@ def main():
 
     net.eval()
     total = 0
+    classified_number = 0
+    uncertain_number = 0
     with torch.no_grad():
         pbar = tqdm(total=len(test_loader), unit=' batches')
         pbar.set_description('Validation')
@@ -84,16 +93,28 @@ def main():
 
             y_pred_crop, _, _ = net(crop_image)
             y_pred = (y_pred_raw + y_pred_crop) / 2.
+            F.normalize(y_pred.float(), p=1, dim=1)
+            
 
             _, concat_predict = torch.max(y_pred,dim=1)
 
             for j in range(len(X)):
                 predict_la = concat_predict.data[j]
-                predict_la_name = label_dict[str(predict_la.item())]
+                if y_pred.data[j][predict_la] > 0.8:
+                    predict_la_name = label_dict[str(predict_la.item())]
+                    classified_number += 1
+                else:
+                    predict_la_name = 'uncertain'
+                    uncertain_number += 1
                 picture_name = image_res_list[i][j]
                 im_path = os.path.join(image_path, picture_name)
                 shutil.copy(im_path, os.path.join(result_path, predict_la_name))
                 total += 1
+            # end of this batch
+            batch_info = 'Number of classified images {} , Not sure the number of images {} .'.format(
+                 classified_number, uncertain_number)
+            pbar.update()
+            pbar.set_postfix_str(batch_info)
 
     print('the total number of picture is : ' + str(total))
     print('finishing spliting!')
