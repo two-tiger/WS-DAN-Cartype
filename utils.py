@@ -63,7 +63,7 @@ class TopKAccuracyMetric(Metric):
         correct = pred.eq(target.view(1, -1).expand_as(pred))
 
         for i, k in enumerate(self.topk):
-            correct_k = correct[:k].view(-1).float().sum(0)
+            correct_k = correct[:k].contiguous().view(-1).float().sum(0)
             self.corrects[i] += correct_k.item()
 
         return self.corrects * 100. / self.num_samples

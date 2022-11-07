@@ -14,13 +14,13 @@ images_path = './images/'
 class_names = ['car', 'lbus', 'ltruck', 'mbus', 'mpv', 'mtruck', 'nonmotor', 'suv', 'van']
 
 # rename the picture
-class_files = os.listdir(images_path)
-for class_file in class_files:
-    class_path = os.path.join(images_path, class_file)
-    fileList = os.listdir(class_path)
-    new_name = [class_file + str(i) for i in range(len(fileList))]
-    for j in range(len(new_name)):
-        os.rename(class_path + '/'+ fileList[j], class_path + '/'+ new_name[j] + '.jpg')
+# class_files = os.listdir(images_path)
+# for class_file in class_files:
+#     class_path = os.path.join(images_path, class_file)
+#     fileList = os.listdir(class_path)
+#     new_name = [class_file + str(i) for i in range(len(fileList))]
+#     for j in range(len(new_name)):
+#         os.rename(class_path + '/'+ fileList[j], class_path + '/'+ new_name[j] + '.jpg')
 
 # image.txt
 picture_path_list = []

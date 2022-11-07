@@ -2,9 +2,9 @@
 # Training Config
 ##################################################
 GPU = '0'                   # GPU
-workers = 4                 # number of Dataloader workers
-epochs = 160                # number of epochs
-batch_size = 12             # batch size
+workers = 0                 # number of Dataloader workers
+epochs = 60                # number of epochs
+batch_size = 6             # batch size
 learning_rate = 1e-3        # initial learning rate
 
 ##################################################
@@ -22,7 +22,7 @@ tag = 'cartype'                # 'aircraft', 'bird', 'car', 'dog' or 'cartype'
 
 # saving directory of .ckpt models
 save_dir = './FGVC/CarType/ckpt/'
-model_name = 'model.ckpt'
+model_name = 'model1009.ckpt'
 log_name = 'train.log'
 
 # checkpoint model for resume training

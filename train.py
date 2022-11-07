@@ -38,8 +38,8 @@ crop_metric = TopKAccuracyMetric(topk=(1, 5))
 drop_metric = TopKAccuracyMetric(topk=(1, 5))
 
 # path
-crop_path = './AugumentData/crop/'
-drop_path = './AugumentData/drop/'
+#crop_path = './AugumentData/crop/'
+#drop_path = './AugumentData/drop/'
 
 def main():
     ##################################
@@ -63,12 +63,12 @@ def main():
     ##################################
     train_dataset, validate_dataset = get_trainval_datasets(config.tag, config.image_size)
 
-    train_loader, validate_loader = DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True,
+    train_loader, validate_loader = DataLoader(train_dataset, batch_size=config.batch_size, shuffle=False,
                                                num_workers=config.workers, pin_memory=True), \
                                     DataLoader(validate_dataset, batch_size=config.batch_size * 4, shuffle=False,
                                                num_workers=config.workers, pin_memory=True)
     num_classes = train_dataset.num_classes
-
+    
     ##################################
     # Initialize model
     ##################################
@@ -183,12 +183,12 @@ def train(**kwargs):
     drop_metric.reset()
 
     # make dir
-    crop_path_epoch = crop_path + 'epoch' + str(epoch)
-    drop_path_epoch = drop_path + 'epoch' + str(epoch)
-    if not os.path.exists(crop_path_epoch):
-        os.mkdir(crop_path_epoch)
-    if not os.path.exists(drop_path_epoch):
-        os.mkdir(drop_path_epoch)
+    # crop_path_epoch = crop_path + 'epoch' + str(epoch)
+    # drop_path_epoch = drop_path + 'epoch' + str(epoch)
+    # if not os.path.exists(crop_path_epoch):
+    #     os.mkdir(crop_path_epoch)
+    # if not os.path.exists(drop_path_epoch):
+    #     os.mkdir(drop_path_epoch)
 
     # begin training
     start_time = time.time()
@@ -215,8 +215,8 @@ def train(**kwargs):
         ##################################
         with torch.no_grad():
             crop_images = batch_augment(X, attention_map[:, :1, :, :], mode='crop', theta=(0.4, 0.6), padding_ratio=0.1)
-            for j in range(len(crop_images)):
-                torchvision.utils.save_image(crop_images[j], crop_path_epoch + '/'+ str(i * config.batch_size + j)+'.jpg')
+            #for j in range(len(crop_images)):
+            #    torchvision.utils.save_image(crop_images[j], crop_path_epoch + '/'+ str(i * config.batch_size + j)+'.jpg')
 
         # crop images forward
         y_pred_crop, _, _ = net(crop_images)
@@ -226,8 +226,8 @@ def train(**kwargs):
         ##################################
         with torch.no_grad():
             drop_images = batch_augment(X, attention_map[:, 1:, :, :], mode='drop', theta=(0.2, 0.5))
-            for k in range(len(drop_images)):
-                torchvision.utils.save_image(drop_images[j], drop_path_epoch + '/'+ str(i * config.batch_size + k)+'.jpg')
+            #for k in range(len(drop_images)):
+            #    torchvision.utils.save_image(drop_images[j], drop_path_epoch + '/'+ str(i * config.batch_size + k)+'.jpg')
 
         # drop images forward
         y_pred_drop, _, _ = net(drop_images)

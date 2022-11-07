@@ -6,3 +6,5 @@
 /.vscode
 /CarType/images/
 /AugumentData
+*.tar.gz
+/FGVC
